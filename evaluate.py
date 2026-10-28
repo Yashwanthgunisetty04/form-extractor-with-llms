@@ -30,7 +30,7 @@ def main():
     form_type = args[0] if args else "fda_1932a"
     fields = {f["name"]: f for f in get_fields(form_type)}
 
-    with ANSWERS.open(newline="", encoding="utf-8") as fh:
+    with ANSWERS.open(newline="", encoding="utf-8-sig") as fh:
         answers = list(csv.DictReader(fh))
 
     stats = defaultdict(Counter)  # field name -> counts

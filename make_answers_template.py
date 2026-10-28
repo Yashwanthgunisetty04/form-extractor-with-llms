@@ -17,7 +17,7 @@ answers = Path("samples/answers.csv")
 
 rows = {}
 if answers.exists():
-    with answers.open(newline="", encoding="utf-8") as fh:
+    with answers.open(newline="", encoding="utf-8-sig") as fh:
         rows = {r["file"]: r for r in csv.DictReader(fh)}
 
 files = sorted(f.name for f in Path("samples").iterdir()
@@ -25,7 +25,7 @@ files = sorted(f.name for f in Path("samples").iterdir()
 for name in files:
     rows.setdefault(name, {"file": name})
 
-with answers.open("w", newline="", encoding="utf-8") as fh:
+with answers.open("w", newline="", encoding="utf-8-sig") as fh:
     writer = csv.DictWriter(fh, fieldnames=columns, extrasaction="ignore")
     writer.writeheader()
     for name in sorted(rows):
