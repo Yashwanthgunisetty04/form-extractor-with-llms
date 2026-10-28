@@ -55,6 +55,8 @@ validation, or illegible.
 ## Folders
 - forms/<form_type>/templates/  blank form PDFs
 - samples/  real filled test forms
+- samples/answers.csv  correct answers per form (one row per file, one column per
+  field; "?" = unknown, not scored). Created/extended by make_answers_template.py.
 - output/   generated images and JSON (gitignored)
 
 ## Status
