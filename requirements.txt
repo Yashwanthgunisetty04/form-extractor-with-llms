@@ -11,3 +11,7 @@ pymupdf4llm==2.0
 pymupdf_layout==2.0
 PyYAML==6.0.3
 tabulate==0.10.0
+pillow
+openai==3.38.0
+python-dotenv==1.2.4
+boto3==1.43.119
