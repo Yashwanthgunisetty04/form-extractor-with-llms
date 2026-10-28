@@ -84,6 +84,12 @@ validation, or illegible.
       Writes output/<name>.json (summary, per-page blur/angle/rotation, per-field
       compare result + page) and output/<name>_p<N>.jpg cleaned pages.
       Synthetic sample end to end: 13 accepted, 12 review (same as try_compare).
+- [x] evaluate.py — `python evaluate.py [-v]`: compares output/<name>.json with
+      samples/answers.csv (no API calls). Reports per-field and overall LLM/Textract
+      accuracy, agreement and whether agreement means correct, accepted-but-wrong
+      list (the key safety number), review reasons; -v lists every engine mistake.
+- [ ] Collect 20–30 real handwritten forms + fill answers.csv, then evaluate and tune
+      (blur threshold, confidence cutoff, model choice, date queries).
 - [ ] app.py (Streamlit viewer, later)
 
 ## Success criteria
