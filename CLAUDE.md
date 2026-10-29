@@ -10,7 +10,7 @@ no template alignment yet.
 ## Pipeline
 load.py → preprocess.py → extract.py → compare.py → result JSON
 form_config.py is data read by extract.py and compare.py.
-run.py calls the steps in order.
+run.py calls the steps in order. app.py + pages/ is the Streamlit UI on top.
 
 ## Module contracts (keep these fixed so each file can be tested alone)
 | File | Input | Output |
@@ -61,9 +61,12 @@ validation, or illegible.
 
 ## Status
 - [x] load.py — PDF to images
-- [x] preprocess.py — blur score, deskew, contrast (tested on blank form + synthetic tilt; check angles on real photos)
+- [x] preprocess.py — blur score, deskew, contrast, orientation. orient() turns the page
+      only if the best turn scores >= 1.5x the runner-up (MIN_LEAD); real photos score
+      only ~0.2–0.3 even upright, so an absolute cutoff never fired. Fixed a sideways
+      page in FORM_2 (turn 270).
 - [x] form_config.py — 25 fields for fda_1932a (pages 1–3), 7 of them checkboxes
-      (choice/multi_choice).
+      (choice/multi_choice). age and weight are type measure ("62lb" = "62 lb").
 - [x] extract.py — LLM + Textract (try_extract.py prints both side by side)
       - LLM: OpenAI gpt-6.1-terra (OPENAI_MODEL), Responses API + strict json_schema.
         On synthetic sample medium_tilt_m18deg.pdf: all readable fields correct,
@@ -81,6 +84,7 @@ validation, or illegible.
       output/extract/*.json (no API calls).
       Synthetic sample: 13 accepted (all correct), 12 review.
 - [x] run.py — `python run.py <file or folder> [form_type]` (default fda_1932a).
+      process_file(path, form_type, on_step) is what the UI calls.
       Writes output/<name>.json (summary, per-page blur/angle/rotation, per-field
       compare result + page) and output/<name>_p<N>.jpg cleaned pages.
       Synthetic sample end to end: 13 accepted, 12 review (same as try_compare).
@@ -88,9 +92,17 @@ validation, or illegible.
       samples/answers.csv (no API calls). Reports per-field and overall LLM/Textract
       accuracy, agreement and whether agreement means correct, accepted-but-wrong
       list (the key safety number), review reasons; -v lists every engine mistake.
+      evaluate(output_dir, answers_csv, form_type) returns the numbers for the UI.
+      First 2 real handwritten forms: LLM 50/50, Textract 38/50, 34 accepted (all
+      correct), 16 review (LLM right in all 16). Textract weak on split date boxes
+      and on some checkboxes (blank box read as "No" at 99 conf).
 - [ ] Collect 20–30 real handwritten forms + fill answers.csv, then evaluate and tune
       (blur threshold, confidence cutoff, model choice, date queries).
-- [ ] app.py (Streamlit viewer, later)
+- [x] app.py — Streamlit UI: `streamlit run app.py`. pages/1_Process (upload →
+      samples/, run), 2_Review (page image + flagged field cards, typed inputs,
+      saves output/<name>_reviewed.json, never touches <name>.json),
+      3_Evaluate (metrics from evaluate()). File helpers in ui/files.py.
+      Out of scope: bounding boxes, form-type detection, new forms via the UI.
 
 ## Success criteria
 Run 20–30 real forms; measure per-field accuracy for LLM and Textract,
