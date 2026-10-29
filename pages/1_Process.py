@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 import streamlit as st
@@ -9,6 +10,15 @@ from ui.files import SAMPLES, FILE_TYPES
 
 st.set_page_config(page_title="Process", layout="wide")
 st.title("Process a form")
+
+# On Streamlit Cloud the API keys live in st.secrets; copy them into the environment,
+# where the OpenAI and AWS clients look. Locally there are no secrets and .env is used.
+try:
+    for name, value in st.secrets.items():
+        if isinstance(value, str):
+            os.environ.setdefault(name, value)
+except FileNotFoundError:
+    pass
 
 form_type = st.selectbox("Form type", list(FORMS))
 upload = st.file_uploader("Filled form (PDF or photo)", type=[t[1:] for t in FILE_TYPES])
