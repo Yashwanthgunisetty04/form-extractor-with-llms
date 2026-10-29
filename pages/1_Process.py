@@ -19,6 +19,13 @@ try:
             os.environ.setdefault(name, value)
 except FileNotFoundError:
     pass
+if not os.getenv("OPENAI_API_KEY"):
+    try:
+        found = list(st.secrets.keys())
+    except FileNotFoundError:
+        found = []
+    # names only, never values
+    st.error(f"OPENAI_API_KEY is not set. Secret names found: {found or 'none'}")
 
 form_type = st.selectbox("Form type", list(FORMS))
 upload = st.file_uploader("Filled form (PDF or photo)", type=[t[1:] for t in FILE_TYPES])
