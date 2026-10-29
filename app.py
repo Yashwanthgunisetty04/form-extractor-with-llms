@@ -4,9 +4,9 @@ from engine.form_config import FORMS
 from ui.files import list_results, list_samples, load_reviewed
 
 # usage: streamlit run app.py
-st.set_page_config(page_title="Form Extraction", layout="wide")
+st.set_page_config(page_title="Form Extractor with LLMs", layout="wide")
 
-st.title("Form Extraction POC")
+st.title("Form Extractor with LLMs")
 st.write(
     "Reads handwritten form scans with two engines (an LLM and AWS Textract), compares "
     "the readings and flags fields that need a human check."

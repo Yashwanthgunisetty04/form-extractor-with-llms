@@ -1,4 +1,4 @@
-# Form Extraction POC
+# Form Extractor with LLMs (POC)
 
 ## Goal
 Proof of concept: extract field values from phone-scanned, mostly handwritten
