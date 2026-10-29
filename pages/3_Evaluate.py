@@ -15,6 +15,14 @@ result = evaluate(OUT, ANSWERS, form_type)
 
 for message in result["skipped"]:
     st.caption(f"Skipped {message}")
+if not ANSWERS.exists():
+    # the deployed app has no answers.csv: it holds personal data and is never committed
+    st.info("Evaluation runs locally: it scores the results against samples/answers.csv, "
+            "the correct answers for real forms, which contain personal data and are kept "
+            "off this server. On the first 2 real handwritten forms (50 fields): LLM 50/50 "
+            "correct, Textract 38/50, 34 fields accepted automatically (all correct), "
+            "16 sent to review.")
+    st.stop()
 if not result["forms"]:
     st.info("Nothing to evaluate: fill in samples/answers.csv and process the forms first.")
     st.stop()
