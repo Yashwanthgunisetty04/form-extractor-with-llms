@@ -37,7 +37,6 @@ review with a wrong value. Textract's weak spots were dates written in split
 Month/Day/Year boxes and some checkboxes (a blank box read as "No" with 99%
 confidence).
 
-Two forms is a small sample. The next step is 20–30 forms to confirm these numbers.
 
 ## How it works
 
