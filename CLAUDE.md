@@ -103,6 +103,11 @@ validation, or illegible.
       saves output/<name>_reviewed.json, never touches <name>.json),
       3_Evaluate (metrics from evaluate()). File helpers in ui/files.py.
       Out of scope: bounding boxes, form-type detection, new forms via the UI.
+- [x] Deployed for interview demos: https://form-extractor-with-llms.streamlit.app/
+      (Streamlit Community Cloud, repo github.com/Yashwanthgunisetty04/form-extractor-with-llms,
+      branch main). Keys in Streamlit Secrets, copied to env in pages/1_Process.py.
+      No password (user's choice); protect with OpenAI/AWS spending limits.
+      Evaluate is local-only (answers.csv not deployed). README.md for interviewers.
 
 ## Success criteria
 Run 20–30 real forms; measure per-field accuracy for LLM and Textract,
