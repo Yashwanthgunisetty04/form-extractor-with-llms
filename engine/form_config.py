@@ -6,7 +6,8 @@ Each field:
   page      1-based page number in the scanned PDF
   section   form section the field sits in (helps the LLM and avoids mixing up
             repeated labels like "City" or "Telephone Number")
-  type      text | name | date | phone | email | zip | choice | multi_choice
+  type      text | name | date | phone | email | zip | measure | choice | multi_choice
+            (measure = number + unit, e.g. weight "62 lb")
   query     natural-language question for Textract Queries (checkbox fields
             too: Queries returns the label of the ticked box)
   options   allowed values for choice / multi_choice fields
@@ -95,10 +96,10 @@ FORMS = {
          "type": "text",
          "query": "What is the breed?"},
         {"name": "age", "page": 3, "section": "Species and Related Information",
-         "type": "text",
+         "type": "measure",
          "query": "What is the age?"},
         {"name": "weight", "page": 3, "section": "Species and Related Information",
-         "type": "text",
+         "type": "measure",
          "query": "What is the weight?"},
     ]
 }

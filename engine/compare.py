@@ -33,6 +33,9 @@ def normalize(value, field):
         return digits
     if ftype == "email":
         return value.replace(" ", "").lower()
+    if ftype == "measure":
+        # "62lb" and "62 lb" are the same reading: one space between number and unit
+        return re.sub(r"(?<=\d)\s*(?=[^\d\s.,/-])", " ", value)
     return value
 
 

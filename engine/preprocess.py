@@ -71,7 +71,8 @@ def flatten(img, corners):
     return cv2.warpPerspective(img, M, (w, h)), angle
 
 THUMB_SIZE = (170, 220)  # (width, height) used to compare pages with templates
-MIN_MATCH = 0.3  # below this no turn looks like the form, so don't turn at all
+MIN_LEAD = 1.5  # best turn must score this many times the runner-up, else don't turn
+# (real photos score only ~0.2-0.3 even when upright, so an absolute cutoff fails)
 
 # clockwise turn needed to fix the page, keyed by degrees
 ROTATIONS = {
@@ -92,15 +93,15 @@ def make_templates(pages):
 
 def orient(img, templates):
     # try all four turns, keep the one that looks most like a blank page
-    best_score, best_turn = -1.0, 0
+    scores = {}
     for turn, code in ROTATIONS.items():
         thumb = thumbnail(img if code is None else cv2.rotate(img, code))
-        score = max(cv2.matchTemplate(thumb, t, cv2.TM_CCOEFF_NORMED)[0][0]
-                    for t in templates)
-        if score > best_score:
-            best_score, best_turn = score, turn
-    if best_score < MIN_MATCH:
-        return img, 0
+        scores[turn] = max(cv2.matchTemplate(thumb, t, cv2.TM_CCOEFF_NORMED)[0][0]
+                           for t in templates)
+    best_turn = max(scores, key=scores.get)
+    best, second = sorted(scores.values(), reverse=True)[:2]
+    if best <= 0 or best < MIN_LEAD * max(second, 0):
+        return img, 0  # no turn clearly stands out
     code = ROTATIONS[best_turn]
     return (img if code is None else cv2.rotate(img, code)), best_turn
 

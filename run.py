@@ -11,17 +11,20 @@ from engine.form_config import get_fields, get_fields_for_page
 from engine.extract import llm_read_page, textract_read_page, LLM_MODEL
 from engine.compare import compare
 
-OUT = Path("output")
+ROOT = Path(__file__).parent
+OUT = ROOT / "output"
 FILE_TYPES = (".pdf", ".jpg", ".jpeg", ".png")
 
 
-def run(path, form_type):
+def process_file(path, form_type, on_step=print):
     # one filled form -> output/<name>.json (+ cleaned page images for review)
+    # on_step(message) reports progress (print on the command line, live status in the UI)
     path = Path(path)
     fields = get_fields(form_type)
-    templates = make_templates(load_pages(f"forms/{form_type}/templates/blank.pdf"))
+    templates = make_templates(load_pages(ROOT / "forms" / form_type / "templates" / "blank.pdf"))
     pages = load_pages(path)
     page_info, results = [], []
+    OUT.mkdir(exist_ok=True)
 
     for page_no in sorted({f["page"] for f in fields}):
         page_fields = get_fields_for_page(form_type, page_no)
@@ -38,7 +41,7 @@ def run(path, form_type):
         page_info.append({"page": page_no, "blur": round(blur), "blurry": blur < BLUR_THRESHOLD,
                           "angle": round(angle, 2), "rotation": rotation,
                           "image": image_file.name})
-        print(f"  page {page_no}: reading {len(page_fields)} fields...")
+        on_step(f"page {page_no}: reading {len(page_fields)} fields...")
         llm = llm_read_page(cleaned, page_fields)
         textract = textract_read_page(cleaned, page_fields)
         results += [{"page": page_no, **r} for r in compare(llm, textract, page_fields)]
@@ -67,11 +70,10 @@ if __name__ == "__main__":
     form_type = sys.argv[2] if len(sys.argv) > 2 else "fda_1932a"
     files = (sorted(f for f in target.iterdir() if f.suffix.lower() in FILE_TYPES)
              if target.is_dir() else [target])
-    OUT.mkdir(exist_ok=True)
 
     for f in files:
         print(f"{f.name} ({form_type})")
-        out_file, report = run(f, form_type)
+        out_file, report = process_file(f, form_type, on_step=lambda m: print(f"  {m}"))
         s = report["summary"]
         blurry = [p["page"] for p in report["pages"] if p["blurry"]]
         print(f"  {s['accepted']} accepted, {s['review']} review"
